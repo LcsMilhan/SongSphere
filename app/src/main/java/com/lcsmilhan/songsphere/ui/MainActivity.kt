@@ -1,4 +1,4 @@
-package com.lcsmilhan.songsphere
+package com.lcsmilhan.songsphere.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

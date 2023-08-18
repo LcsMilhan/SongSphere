@@ -1,4 +1,4 @@
-package com.lcsmilhan.songsphere.service
+package com.lcsmilhan.songsphere.service.player
 
 import android.content.Intent
 import androidx.media3.common.Player

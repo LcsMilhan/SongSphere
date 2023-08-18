@@ -12,8 +12,8 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.lcsmilhan.songsphere.common.Constants.SONG_COLLECTION
 import com.lcsmilhan.songsphere.data.repository.SongRepositoryImpl
 import com.lcsmilhan.songsphere.domain.repository.SongRepository
-import com.lcsmilhan.songsphere.service.SongServiceHandler
 import com.lcsmilhan.songsphere.service.notification.SongNotificationManager
+import com.lcsmilhan.songsphere.service.player.SongServiceHandler
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

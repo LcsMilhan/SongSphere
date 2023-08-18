@@ -12,7 +12,8 @@ class SongRepositoryImpl @Inject constructor(
 
     override suspend fun getAllSongs(): List<Song> {
         return try {
-            songCollection.get().await().toObjects(Song::class.java)
+            val songs = songCollection.get().await().toObjects(Song::class.java)
+            songs
         } catch (e: Exception) {
             emptyList()
         }

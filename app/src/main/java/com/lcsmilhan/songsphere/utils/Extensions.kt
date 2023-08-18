@@ -1,10 +1,11 @@
 package com.lcsmilhan.songsphere.utils
 
+import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import com.lcsmilhan.songsphere.domain.model.Song
-import com.lcsmilhan.songsphere.presentation.viewmodel.SongState
-import com.lcsmilhan.songsphere.service.MediaState
-import com.lcsmilhan.songsphere.service.SongServiceHandler
+import com.lcsmilhan.songsphere.service.PlaybackState
+import com.lcsmilhan.songsphere.service.player.MediaState
+import com.lcsmilhan.songsphere.service.player.SongServiceHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,8 +21,9 @@ fun List<Song>.resetSongs() {
 }
 
 fun List<Song>.toMediaItemList(): List<MediaItem> {
-    return this.map { MediaItem.fromUri(it.songUrl) }
+    return this.map { MediaItem.fromUri(it.songUrl.toUri()) }
 }
+
 
 fun CoroutineScope.collectPlayerState(
     songServiceHandler: SongServiceHandler,
@@ -35,15 +37,15 @@ fun CoroutineScope.collectPlayerState(
 }
 
 fun CoroutineScope.launchPlaybackStateJob(
-    playbackStateFlow: MutableStateFlow<SongState.PlaybackState>,
+    playbackStateFlow: MutableStateFlow<PlaybackState>,
     state: MediaState,
     songServiceHandler: SongServiceHandler
 ) = launch {
     do {
         playbackStateFlow.emit(
-            SongState.PlaybackState(
+            PlaybackState(
                 currentPlaybackPosition = songServiceHandler.currentPlaybackPosition,
-                currentTrackDuration = songServiceHandler.currentSongDuration
+                currentSongDuration = songServiceHandler.currentSongDuration
             )
         )
         delay(1000)

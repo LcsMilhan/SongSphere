@@ -1,6 +1,6 @@
 package com.lcsmilhan.songsphere.domain.model
 
-import com.lcsmilhan.songsphere.service.MediaState
+import com.lcsmilhan.songsphere.service.player.MediaState
 
 data class Song(
     val mediaId: String = "",
@@ -8,7 +8,6 @@ data class Song(
     val songName: String = "",
     val songUrl: String = "",
     val imageUrl: String = "",
-    val songDuration: String = "",
     var isSelected: Boolean = false,
     var state: MediaState = MediaState.Initial
 )

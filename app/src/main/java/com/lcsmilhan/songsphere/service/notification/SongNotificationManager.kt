@@ -77,7 +77,8 @@ class SongNotificationManager @Inject constructor(
                         context,
                         0,
                         Intent(context, MainActivity::class.java),
-                        FLAG_IMMUTABLE)
+                        FLAG_IMMUTABLE
+                    )
                 )
             )
             .setNotificationListener(notificationListener)

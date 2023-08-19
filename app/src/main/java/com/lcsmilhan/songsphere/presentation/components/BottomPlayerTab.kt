@@ -15,13 +15,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.lcsmilhan.songsphere.domain.model.Song
-
+import com.lcsmilhan.songsphere.service.PlayerEvents
 
 @Composable
 fun BottomPlayerTab(
     selectedSong: Song,
-    playResourceProvider: () -> Int,
-    playerEvents: (SongEvent) -> Unit,
+    playerEvents: PlayerEvents,
     onBottomTabClick: () -> Unit
 ) {
     Column(
@@ -45,22 +44,16 @@ fun BottomPlayerTab(
                 modifier = Modifier.weight(1f)
             )
             PreviousIcon(
-                onClick =  {
-                    playerEvents(SongEvent.Next)
-                },
+                onClick = playerEvents::onPreviousClick,
                 isBottomTab = true
             )
             PlayPauseIcon(
-                onClick = {
-                    playerEvents(SongEvent.PlayPause)
-                },
-                playResourceProvider = playResourceProvider,
+                selectedSong = selectedSong,
+                onClick = playerEvents::onPlayPauseClick,
                 isBottomTab = true
             )
             NextIcon(
-                onClick = {
-                    playerEvents(SongEvent.Next)
-                },
+                onClick = playerEvents::onNextClick,
                 isBottomTab = true
             )
         }

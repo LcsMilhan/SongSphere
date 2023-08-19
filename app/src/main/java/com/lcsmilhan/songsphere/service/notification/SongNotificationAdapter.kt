@@ -20,7 +20,7 @@ class SongNotificationAdapter(
 ) : PlayerNotificationManager.MediaDescriptionAdapter {
 
     override fun getCurrentContentTitle(player: Player): CharSequence {
-        return player.currentMediaItem?.mediaMetadata?.title ?: ""
+        return player.mediaMetadata.albumTitle ?: ""
     }
 
     override fun createCurrentContentIntent(player: Player): PendingIntent? {
@@ -28,7 +28,7 @@ class SongNotificationAdapter(
     }
 
     override fun getCurrentContentText(player: Player): CharSequence {
-        return player.currentMediaItem?.mediaMetadata?.artist ?: ""
+        return player.mediaMetadata.displayTitle ?: ""
     }
 
     override fun getCurrentLargeIcon(
@@ -37,48 +37,17 @@ class SongNotificationAdapter(
     ): Bitmap? {
         Glide.with(context)
             .asBitmap()
-            .load(player.mediaMetadata.artworkUri)
+            .load(player.currentMediaItem?.mediaMetadata?.artworkUri)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
-            .into(
-                object : CustomTarget<Bitmap>() {
-                    override fun onLoadCleared(placeholder: Drawable?) = Unit
-                    override fun onResourceReady(
-                        resource: Bitmap,
-                        transition: Transition<in Bitmap>?
-                    ) {
-                        callback.onBitmap(resource)
-                    }
-                })
+            .into(object : CustomTarget<Bitmap>() {
+                override fun onLoadCleared(placeholder: Drawable?) = Unit
+                override fun onResourceReady(
+                    resource: Bitmap, transition: Transition<in Bitmap>?
+                ) {
+                    callback.onBitmap(resource)
+                }
+            })
         return null
     }
-
-//    override fun getCurrentLargeIcon(
-//        player: Player,
-//        callback: PlayerNotificationManager.BitmapCallback
-//    ): Bitmap? {
-//        val request = ImageRequest.Builder(context)
-//            .placeholder(R.drawable.holder)
-//            .diskCacheKey(player.currentMediaItem?.mediaId)
-//            .diskCachePolicy(CachePolicy.ENABLED)
-//            .data(player.mediaMetadata.artworkUri)
-//            .target(
-//                onStart = {
-//                },
-//                onSuccess = { result ->
-//                    callback.onBitmap(result.toBitmap())
-//                },
-//                onError = {
-//                    callback.onBitmap(
-//                        (AppCompatResources.getDrawable(
-//                            context,
-//                            R.drawable.holder
-//                        ) as BitmapDrawable).bitmap
-//                    )
-//                }
-//            )
-//            .build()
-//        ImageLoader(context).enqueue(request)
-//        return null
-//    }
 }
 

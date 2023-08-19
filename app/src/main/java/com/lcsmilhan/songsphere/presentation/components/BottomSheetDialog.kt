@@ -1,5 +1,6 @@
 package com.lcsmilhan.songsphere.presentation.components
 
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,26 +14,26 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.lcsmilhan.songsphere.domain.model.Song
+import com.lcsmilhan.songsphere.service.PlaybackState
+import com.lcsmilhan.songsphere.service.PlayerEvents
+import com.lcsmilhan.songsphere.utils.formatTime
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun BottomSheetDialog(
     selectedSong: Song,
-    playResourceProvider: () -> Int,
-    playerEvents: (SongEvent) -> Unit,
-    durationString: String,
-    progressString: String,
-    progress: Float
+    playerEvents: PlayerEvents,
+    playbackState: StateFlow<PlaybackState>
 ) {
-
-    val newProgressValue = remember { mutableStateOf(0f) }
-    val useNewProgressValue = remember { mutableStateOf(false) }
-
     Column(
         Modifier.fillMaxWidth()
     ) {
@@ -41,45 +42,14 @@ fun BottomSheetDialog(
             songName = selectedSong.songName,
             artist = selectedSong.artist
         )
-        Slider(
-            value = if (useNewProgressValue.value) newProgressValue.value else progress,
-            onValueChange = { newValue ->
-                useNewProgressValue.value = true
-                newProgressValue.value = newValue
-                playerEvents(SongEvent.UpdateProgress(newProgress = newValue))
-            },
-            onValueChangeFinished = {
-                useNewProgressValue.value = false
-            },
-            modifier = Modifier
-                .padding(horizontal = 8.dp)
-        )
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        ) {
-            Text(
-                text = progressString,
-                style = MaterialTheme.typography.bodySmall
-            )
-            Text(
-                text = durationString,
-                style = MaterialTheme.typography.bodySmall
-            )
+        SongProgressSlider(playbackState = playbackState) {
+            playerEvents.onSeekBarPositionChanged(it)
         }
         SongControls(
-            playResourceProvider = playResourceProvider,
-            onPreviousClick = {
-                playerEvents(SongEvent.Previous)
-            },
-            onPlayPauseClick = {
-                playerEvents(SongEvent.PlayPause)
-            },
-            onNextClick = {
-                playerEvents(SongEvent.Next)
-            }
+            selectedSong = selectedSong,
+            onPreviousClick = playerEvents::onPreviousClick,
+            onPlayPauseClick = playerEvents::onPlayPauseClick,
+            onNextClick = playerEvents::onNextClick
         )
     }
 }
@@ -120,31 +90,72 @@ fun SongInfo(
 }
 
 @Composable
+fun SongProgressSlider(
+    playbackState: StateFlow<PlaybackState>,
+    onSeekBarPositionChanged: (Long) -> Unit
+) {
+    val playbackStateValue = playbackState.collectAsState(
+        initial = PlaybackState(0L, 0L)
+    ).value
+    var currentMediaProgress = playbackStateValue.currentPlaybackPosition.toFloat()
+    var currentPosTemp by rememberSaveable { mutableStateOf(0f) }
+
+    Slider(
+        value = if (currentPosTemp == 0f) currentMediaProgress else currentPosTemp,
+        onValueChange = { currentPosTemp = it },
+        onValueChangeFinished = {
+            currentMediaProgress = currentPosTemp
+            currentPosTemp = 0f
+            onSeekBarPositionChanged(currentMediaProgress.toLong())
+        },
+        valueRange = 0f..playbackStateValue.currentSongDuration.toFloat(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    )
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = playbackStateValue.currentPlaybackPosition.formatTime(),
+            style = MaterialTheme.typography.bodySmall
+        )
+        Text(
+            text = playbackStateValue.currentSongDuration.formatTime(),
+            style = MaterialTheme.typography.bodySmall
+        )
+    }
+}
+
+@Composable
 fun SongControls(
-    playResourceProvider: () -> Int,
+    selectedSong: Song,
     onPreviousClick: () -> Unit,
     onPlayPauseClick: () -> Unit,
     onNextClick: () -> Unit
 ) {
-   Row(
-       Modifier
-           .fillMaxWidth()
-           .padding(16.dp),
-       horizontalArrangement = Arrangement.SpaceAround,
-       verticalAlignment = Alignment.CenterVertically
-   ) {
-       PreviousIcon(
-           onClick = onPreviousClick,
-           isBottomTab = false
-       )
-       PlayPauseIcon(
-           onClick = onPlayPauseClick,
-           playResourceProvider = playResourceProvider,
-           isBottomTab = false
-       )
-       NextIcon(
-           onClick = onNextClick,
-           isBottomTab = false
-       )
-   }
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        PreviousIcon(
+            onClick = onPreviousClick,
+            isBottomTab = false
+        )
+        PlayPauseIcon(
+            selectedSong = selectedSong,
+            onClick = onPlayPauseClick,
+            isBottomTab = false
+        )
+        NextIcon(
+            onClick = onNextClick,
+            isBottomTab = false
+        )
+    }
 }

@@ -23,19 +23,26 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lcsmilhan.songsphere.domain.model.Song
 import com.lcsmilhan.songsphere.presentation.components.BottomPlayerTab
 import com.lcsmilhan.songsphere.presentation.components.BottomSheetDialog
 import com.lcsmilhan.songsphere.presentation.components.SongListItem
 import com.lcsmilhan.songsphere.presentation.viewmodel.SongViewModel
+import com.lcsmilhan.songsphere.service.PlaybackState
+import com.lcsmilhan.songsphere.service.PlayerEvents
+import com.lcsmilhan.songsphere.service.PlayerStates
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
     viewModel: SongViewModel = hiltViewModel(),
-    startService: () -> Unit
+    startService: () -> Unit,
 ) {
+
+    val state = viewModel.uiState.collectAsStateWithLifecycle()
+
     val fullScreenState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true
@@ -44,47 +51,40 @@ fun HomeScreen(
     val onBottomTabClick: () -> Unit = { scope.launch { fullScreenState.show() } }
 
 
-
-    LaunchedEffect(true) {
-        startService()
+    if (state.value == PlayerStates.STATE_PLAYING) {
+        LaunchedEffect(key1 = true) {
+            startService()
+        }
     }
 
     SongList(
-        songs = viewModel.allSongs,
+        songs = viewModel.songs,
         selectedSong = viewModel.selectedSong,
         fullScreenState = fullScreenState,
         playerEvents = viewModel,
-        onBottomTabClick = onBottomTabClick,
-        playResourceProvider = playResourceProvider,
-        durationString = durationString,
-        progressString = progressString,
-        progress = progress
+        playbackState = viewModel.playbackState,
+        onBottomTabClick = onBottomTabClick
     )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SongList(
     songs: List<Song>,
     selectedSong: Song?,
     fullScreenState: ModalBottomSheetState,
-    playerEvents: (SongEvent) -> Unit,
-    onBottomTabClick: () -> Unit,
-    playResourceProvider: () -> Int,
-    durationString: String,
-    progressString: String,
-    progress: Float
+    playerEvents: PlayerEvents,
+    playbackState: StateFlow<PlaybackState>,
+    onBottomTabClick: () -> Unit
 ) {
+
+
     ModalBottomSheetLayout(
         sheetContent = {
             if (selectedSong != null) {
                 BottomSheetDialog(
                     selectedSong = selectedSong,
                     playerEvents = playerEvents,
-                    playResourceProvider = playResourceProvider,
-                    durationString = durationString,
-                    progressString = progressString,
-                    progress = progress
+                    playbackState = playbackState
                 )
             }
         },

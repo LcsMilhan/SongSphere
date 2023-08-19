@@ -3,6 +3,7 @@ package com.lcsmilhan.songsphere.presentation.components
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -16,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.lcsmilhan.songsphere.R
+import com.lcsmilhan.songsphere.domain.model.Song
+import com.lcsmilhan.songsphere.service.PlayerStates
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -62,18 +65,31 @@ fun PreviousIcon(
 
 @Composable
 fun PlayPauseIcon(
+    selectedSong: Song,
     onClick: () -> Unit,
-    playResourceProvider: () -> Int,
     isBottomTab: Boolean
 ) {
-    IconButton(onClick = onClick) {
-        Icon(
-            painter = painterResource(playResourceProvider()),
-            contentDescription = "Play and Pause Icon",
-            tint = if (isBottomTab) MaterialTheme.colorScheme.onPrimary
-            else MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier.size(48.dp)
+    if (selectedSong.state == PlayerStates.STATE_BUFFERING) {
+        CircularProgressIndicator(
+            Modifier
+                .size(48.dp)
+                .padding(9.dp),
+            color = if (isBottomTab) MaterialTheme.colorScheme.onPrimary
+            else MaterialTheme.colorScheme.onPrimaryContainer
         )
+    } else {
+        IconButton(onClick = onClick) {
+            Icon(
+                painter = painterResource(
+                    if (selectedSong.state == PlayerStates.STATE_PLAYING) R.drawable.pause
+                    else R.drawable.play
+                ),
+                contentDescription = "Play and Pause Icon",
+                tint = if (isBottomTab) MaterialTheme.colorScheme.onPrimary
+                else MaterialTheme.colorScheme.onPrimaryContainer,
+                modifier = Modifier.size(48.dp)
+            )
+        }
     }
 }
 

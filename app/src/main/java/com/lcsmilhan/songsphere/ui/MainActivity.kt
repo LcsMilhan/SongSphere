@@ -27,28 +27,23 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
+
                     HomeScreen(viewModel, ::startService)
                 }
             }
         }
     }
-
     override fun onDestroy() {
         super.onDestroy()
-        stopService()
-    }
-
-    private fun stopService() {
-        val intent = Intent(this, SongService::class.java)
-        stopService(intent)
-        viewModel.isServiceRunning.value = false
+        stopService(Intent(this, SongService::class.java))
+        viewModel.isServiceRunning = false
     }
 
     private fun startService() {
-        if (!viewModel.isServiceRunning.value) {
+        if (!viewModel.isServiceRunning) {
             val intent = Intent(this, SongService::class.java)
             startForegroundService(intent)
-            viewModel.isServiceRunning.value = true
+            viewModel.isServiceRunning = true
         }
     }
 }

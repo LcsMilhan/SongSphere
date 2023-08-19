@@ -1,10 +1,9 @@
 package com.lcsmilhan.songsphere.utils
 
-import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import com.lcsmilhan.songsphere.domain.model.Song
 import com.lcsmilhan.songsphere.service.PlaybackState
-import com.lcsmilhan.songsphere.service.player.MediaState
+import com.lcsmilhan.songsphere.service.PlayerStates
 import com.lcsmilhan.songsphere.service.player.SongServiceHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -13,21 +12,21 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 
-fun List<Song>.resetSongs() {
+fun MutableList<Song>.resetSongs() {
     this.forEach { song ->
         song.isSelected = false
-        song.state = MediaState.Initial
+        song.state = PlayerStates.STATE_IDLE
     }
 }
 
-fun List<Song>.toMediaItemList(): List<MediaItem> {
-    return this.map { MediaItem.fromUri(it.songUrl.toUri()) }
+fun List<Song>.toMediaItemList(): MutableList<MediaItem> {
+    return this.map { MediaItem.fromUri(it.songUrl) }.toMutableList()
 }
 
 
 fun CoroutineScope.collectPlayerState(
     songServiceHandler: SongServiceHandler,
-    updateState: (MediaState) -> Unit
+    updateState: (PlayerStates) -> Unit
 ) {
     this.launch {
         songServiceHandler.mediaState.collect {
@@ -38,7 +37,7 @@ fun CoroutineScope.collectPlayerState(
 
 fun CoroutineScope.launchPlaybackStateJob(
     playbackStateFlow: MutableStateFlow<PlaybackState>,
-    state: MediaState,
+    state: PlayerStates,
     songServiceHandler: SongServiceHandler
 ) = launch {
     do {
@@ -49,7 +48,7 @@ fun CoroutineScope.launchPlaybackStateJob(
             )
         )
         delay(1000)
-    } while (state == MediaState.Playing(true) && isActive)
+    } while (state == PlayerStates.STATE_PLAYING && isActive)
 }
 
 fun Long.formatTime(): String {

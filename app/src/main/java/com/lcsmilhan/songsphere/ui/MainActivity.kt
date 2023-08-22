@@ -28,7 +28,10 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize()
                 ) {
 
-                    HomeScreen(viewModel, ::startService)
+                    HomeScreen(
+                        viewModel,
+                        ::startService
+                    )
                 }
             }
         }

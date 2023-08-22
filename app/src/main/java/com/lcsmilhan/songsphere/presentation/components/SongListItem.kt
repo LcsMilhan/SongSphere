@@ -26,7 +26,8 @@ import com.lcsmilhan.songsphere.service.PlayerStates
 @Composable
 fun SongListItem(
     song: Song,
-    onSongClick: () -> Unit
+    onSongClick: () -> Unit,
+    startService: () -> Unit
 ) {
     val bgColor = if (song.isSelected) MaterialTheme.colorScheme.primary
     else MaterialTheme.colorScheme.surfaceVariant
@@ -63,6 +64,7 @@ fun SongListItem(
             )
         }
         if (song.state == PlayerStates.STATE_PLAYING) LottieAudioWave()
+        startService()
     }
 }
 

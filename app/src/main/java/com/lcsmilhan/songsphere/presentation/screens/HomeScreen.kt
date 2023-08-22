@@ -18,12 +18,10 @@ import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.lcsmilhan.songsphere.domain.model.Song
 import com.lcsmilhan.songsphere.presentation.components.BottomPlayerTab
 import com.lcsmilhan.songsphere.presentation.components.BottomSheetDialog
@@ -31,17 +29,17 @@ import com.lcsmilhan.songsphere.presentation.components.SongListItem
 import com.lcsmilhan.songsphere.presentation.viewmodel.SongViewModel
 import com.lcsmilhan.songsphere.service.PlaybackState
 import com.lcsmilhan.songsphere.service.PlayerEvents
-import com.lcsmilhan.songsphere.service.PlayerStates
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
     viewModel: SongViewModel = hiltViewModel(),
     startService: () -> Unit,
 ) {
 
-    val state = viewModel.uiState.collectAsStateWithLifecycle()
+
 
     val fullScreenState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
@@ -51,22 +49,18 @@ fun HomeScreen(
     val onBottomTabClick: () -> Unit = { scope.launch { fullScreenState.show() } }
 
 
-    if (state.value == PlayerStates.STATE_PLAYING) {
-        LaunchedEffect(key1 = true) {
-            startService()
-        }
-    }
-
     SongList(
         songs = viewModel.songs,
         selectedSong = viewModel.selectedSong,
         fullScreenState = fullScreenState,
         playerEvents = viewModel,
         playbackState = viewModel.playbackState,
-        onBottomTabClick = onBottomTabClick
+        onBottomTabClick = onBottomTabClick,
+        startService = startService
     )
 }
 
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun SongList(
     songs: List<Song>,
@@ -74,7 +68,8 @@ fun SongList(
     fullScreenState: ModalBottomSheetState,
     playerEvents: PlayerEvents,
     playbackState: StateFlow<PlaybackState>,
-    onBottomTabClick: () -> Unit
+    onBottomTabClick: () -> Unit,
+    startService: () -> Unit
 ) {
 
 
@@ -104,7 +99,8 @@ fun SongList(
                         items(songs) {
                             SongListItem(
                                 song = it,
-                                onSongClick = { playerEvents.onSongClick(it) }
+                                onSongClick = { playerEvents.onSongClick(it) },
+                                startService = startService
                             )
                         }
                     }

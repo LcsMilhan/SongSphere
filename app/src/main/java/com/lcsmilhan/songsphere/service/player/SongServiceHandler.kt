@@ -21,7 +21,6 @@ class SongServiceHandler @Inject constructor(
     val currentSongDuration: Long
         get() = if (player.duration > 0) player.duration else 0L
 
-
     fun initPlayer(songList: MutableList<MediaItem>) {
         player.addListener(this)
         player.setMediaItems(songList)

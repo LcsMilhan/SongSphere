@@ -5,8 +5,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.*
 import com.lcsmilhan.songsphere.domain.model.Song
 import com.lcsmilhan.songsphere.domain.repository.SongRepository
 import com.lcsmilhan.songsphere.service.PlaybackState
@@ -16,12 +18,10 @@ import com.lcsmilhan.songsphere.service.player.SongServiceHandler
 import com.lcsmilhan.songsphere.utils.collectPlayerState
 import com.lcsmilhan.songsphere.utils.launchPlaybackStateJob
 import com.lcsmilhan.songsphere.utils.resetSongs
-import com.lcsmilhan.songsphere.utils.toMediaItemList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,10 +33,6 @@ class SongViewModel @Inject constructor(
 ) : ViewModel(), PlayerEvents {
 
 
-    private val _uiState = MutableStateFlow(PlayerStates.STATE_IDLE)
-    val uiState = _uiState.asStateFlow()
-
-    // TODO: Try = _songs = MutableStateFlow<List<Song>>(emptyList())
     private val _songs = mutableStateListOf<Song>()
     val songs: List<Song> get() = _songs
 
@@ -54,14 +50,32 @@ class SongViewModel @Inject constructor(
     private var playbackStateJob: Job? = null
     private var isAuto: Boolean = false
 
-    // TODO: FIX INIT (val _songs)
     init {
-        viewModelScope.launch {
-            _songs.addAll(repository.getAllSongs())
-            songServiceHandler.initPlayer(songs.toMediaItemList())
-            observePlayerState()
+        loadData()
+        observePlayerState()
+    }
+
+    private fun loadData() = viewModelScope.launch {
+        _songs.addAll(repository.getAllSongs())
+        songServiceHandler.initPlayer(
+            songs.map { song ->
+                MediaItem.Builder()
+                    .setMediaId(song.mediaId)
+                    .setUri(song.songUrl.toUri())
+                    .setMediaMetadata(
+                        MediaMetadata.Builder()
+                            .setTitle(song.songName)
+                            .setArtist(song.artist)
+                            .setArtworkUri(song.imageUrl.toUri())
+                            .build()
+                    ).build()
+            }.toMutableList()
+        )
+        songServiceHandler.mediaState.collect {
+
         }
     }
+
 
     private fun onSongSelected(index: Int) {
         if (selectedSongIndex == -1) isSongPlay = true
@@ -107,7 +121,6 @@ class SongViewModel @Inject constructor(
                 state,
                 songServiceHandler
             )
-        _uiState.value = state
     }
 
     private fun observePlayerState() {

@@ -47,6 +47,7 @@ class SongServiceHandler @Inject constructor(
         player.seekTo(position)
     }
 
+
     override fun onPlayerError(error: PlaybackException) {
         super.onPlayerError(error)
         mediaState.tryEmit(PlayerStates.STATE_ERROR)
@@ -69,6 +70,7 @@ class SongServiceHandler @Inject constructor(
             mediaState.tryEmit(PlayerStates.STATE_PLAYING)
         }
     }
+
 
     @SuppressLint("SwitchIntDef")
     override fun onPlaybackStateChanged(playbackState: Int) {

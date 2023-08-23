@@ -9,6 +9,7 @@ import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
@@ -17,6 +18,7 @@ import androidx.media3.ui.PlayerNotificationManager
 import com.lcsmilhan.songsphere.common.Constants.NOTIFICATION_CHANNEL_ID
 import com.lcsmilhan.songsphere.common.Constants.NOTIFICATION_CHANNEL_NAME
 import com.lcsmilhan.songsphere.common.Constants.NOTIFICATION_ID
+import com.lcsmilhan.songsphere.service.player.SongService
 import com.lcsmilhan.songsphere.ui.MainActivity
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -93,6 +95,8 @@ class SongNotificationManager @Inject constructor(
                 it.setPlayer(player)
             }
     }
+
+
 
     private fun startForegroundNotification(mediaSessionService: MediaSessionService) {
         val notification = Notification.Builder(context, NOTIFICATION_CHANNEL_ID)

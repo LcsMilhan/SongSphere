@@ -35,8 +35,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun HomeScreen(
-    viewModel: SongViewModel = hiltViewModel(),
-    startService: () -> Unit,
+    viewModel: SongViewModel = hiltViewModel()
 ) {
 
 
@@ -55,8 +54,7 @@ fun HomeScreen(
         fullScreenState = fullScreenState,
         playerEvents = viewModel,
         playbackState = viewModel.playbackState,
-        onBottomTabClick = onBottomTabClick,
-        startService = startService
+        onBottomTabClick = onBottomTabClick
     )
 }
 
@@ -68,8 +66,7 @@ fun SongList(
     fullScreenState: ModalBottomSheetState,
     playerEvents: PlayerEvents,
     playbackState: StateFlow<PlaybackState>,
-    onBottomTabClick: () -> Unit,
-    startService: () -> Unit
+    onBottomTabClick: () -> Unit
 ) {
 
 
@@ -99,8 +96,7 @@ fun SongList(
                         items(songs) {
                             SongListItem(
                                 song = it,
-                                onSongClick = { playerEvents.onSongClick(it) },
-                                startService = startService
+                                onSongClick = { playerEvents.onSongClick(it) }
                             )
                         }
                     }

@@ -19,9 +19,9 @@ fun MutableList<Song>.resetSongs() {
     }
 }
 
-fun List<Song>.toMediaItemList(): MutableList<MediaItem> {
-    return this.map { MediaItem.fromUri(it.songUrl) }.toMutableList()
-}
+//fun List<Song>.toMediaItemList(): MutableList<MediaItem> {
+//    return this.map { MediaItem.fromUri(it.songUrl) }.toMutableList()
+//}
 
 
 fun CoroutineScope.collectPlayerState(

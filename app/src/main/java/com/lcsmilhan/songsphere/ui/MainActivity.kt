@@ -29,23 +29,24 @@ class MainActivity : ComponentActivity() {
                 ) {
 
                     HomeScreen(
-                        viewModel
+                        viewModel,
+                        ::startService
                     )
                 }
             }
         }
     }
-//    override fun onDestroy() {
-//        super.onDestroy()
-//        stopService(Intent(this, SongService::class.java))
-//        viewModel.isServiceRunning = false
-//    }
-//
-//    private fun startService() {
-//        if (!viewModel.isServiceRunning) {
-//            val intent = Intent(this, SongService::class.java)
-//            startForegroundService(intent)
-//            viewModel.isServiceRunning = true
-//        }
-//    }
+    override fun onDestroy() {
+        super.onDestroy()
+        stopService(Intent(this, SongService::class.java))
+        viewModel.isServiceRunning = false
+    }
+
+    private fun startService() {
+        if (!viewModel.isServiceRunning) {
+            val intent = Intent(this, SongService::class.java)
+            startForegroundService(intent)
+            viewModel.isServiceRunning = true
+        }
+    }
 }

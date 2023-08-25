@@ -1,6 +1,8 @@
 package com.lcsmilhan.songsphere.presentation.viewmodel
 
 import android.annotation.SuppressLint
+import android.app.Application
+import android.content.Intent
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -14,10 +16,12 @@ import com.lcsmilhan.songsphere.domain.repository.SongRepository
 import com.lcsmilhan.songsphere.service.PlaybackState
 import com.lcsmilhan.songsphere.service.PlayerEvents
 import com.lcsmilhan.songsphere.service.PlayerStates
+import com.lcsmilhan.songsphere.service.player.SongService
 import com.lcsmilhan.songsphere.service.player.SongServiceHandler
 import com.lcsmilhan.songsphere.utils.collectPlayerState
 import com.lcsmilhan.songsphere.utils.launchPlaybackStateJob
 import com.lcsmilhan.songsphere.utils.resetSongs
+import dagger.hilt.android.internal.Contexts.getApplication
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +33,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SongViewModel @Inject constructor(
     private val songServiceHandler: SongServiceHandler,
-    private val repository: SongRepository
+    private val repository: SongRepository,
 ) : ViewModel(), PlayerEvents {
 
 
@@ -58,7 +62,7 @@ class SongViewModel @Inject constructor(
     private fun loadData() = viewModelScope.launch {
         _songs.addAll(repository.getAllSongs())
         songServiceHandler.initPlayer(
-            songs.map { song ->
+            _songs.map { song ->
                 MediaItem.Builder()
                     .setMediaId(song.mediaId)
                     .setUri(song.songUrl.toUri())
@@ -71,9 +75,6 @@ class SongViewModel @Inject constructor(
                     ).build()
             }.toMutableList()
         )
-        songServiceHandler.mediaState.collect {
-
-        }
     }
 
 

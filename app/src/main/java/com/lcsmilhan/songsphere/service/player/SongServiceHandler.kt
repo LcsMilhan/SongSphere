@@ -1,10 +1,12 @@
 package com.lcsmilhan.songsphere.service.player
 
 import android.annotation.SuppressLint
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.exoplayer.ExoPlayer
+import com.lcsmilhan.songsphere.presentation.viewmodel.SongViewModel
 import com.lcsmilhan.songsphere.service.PlayerStates
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
@@ -26,7 +28,6 @@ class SongServiceHandler @Inject constructor(
         player.setMediaItems(songList)
         player.prepare()
     }
-
 
     fun setUpSong(index: Int, isSongPlay: Boolean) {
         if (player.playbackState == Player.STATE_IDLE) player.prepare()

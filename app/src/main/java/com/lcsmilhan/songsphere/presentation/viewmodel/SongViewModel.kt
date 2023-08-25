@@ -3,6 +3,7 @@ package com.lcsmilhan.songsphere.presentation.viewmodel
 import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Intent
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -75,6 +76,7 @@ class SongViewModel @Inject constructor(
                     ).build()
             }.toMutableList()
         )
+        Log.d("viewmodel", "songs size: ${_songs.indices}")
     }
 
 

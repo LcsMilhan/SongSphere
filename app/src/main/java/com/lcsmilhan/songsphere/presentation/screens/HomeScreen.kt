@@ -38,10 +38,10 @@ import kotlinx.coroutines.launch
 @Composable
 fun HomeScreen(
     viewModel: SongViewModel = hiltViewModel(),
-    startService: () -> Unit
+//    startService: () -> Unit
 ) {
 
-    startService()
+//    startService()
 
     val fullScreenState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,

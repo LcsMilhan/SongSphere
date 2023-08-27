@@ -1,6 +1,5 @@
 package com.lcsmilhan.songsphere.utils
 
-import androidx.media3.common.MediaItem
 import com.lcsmilhan.songsphere.domain.model.Song
 import com.lcsmilhan.songsphere.service.PlaybackState
 import com.lcsmilhan.songsphere.service.PlayerStates

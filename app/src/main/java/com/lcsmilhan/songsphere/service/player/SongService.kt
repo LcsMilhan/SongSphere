@@ -24,17 +24,13 @@ class SongService : MediaSessionService() {
     @Inject
     lateinit var mediaSession: MediaSession
 
-
-
     @UnstableApi
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
-        Log.d("service", "startCommand")
         notificationManager.startNotificationService(
             this,
             mediaSession
         )
-        Log.d("service", "startCommand $notificationManager")
         return START_STICKY
     }
 

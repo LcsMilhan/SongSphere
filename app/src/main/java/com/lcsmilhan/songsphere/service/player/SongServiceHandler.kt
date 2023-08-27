@@ -27,10 +27,6 @@ class SongServiceHandler @Inject constructor(
         player.prepare()
     }
 
-    fun getCurrentItemIndex(): Int {
-        return player.currentMediaItemIndex
-    }
-
     fun setUpSong(index: Int, isSongPlay: Boolean) {
         if (player.playbackState == Player.STATE_IDLE) player.prepare()
         player.seekTo(index, 0)
@@ -44,14 +40,6 @@ class SongServiceHandler @Inject constructor(
 
     fun releasePlayer() {
         player.release()
-    }
-
-
-    fun hasNextMedia() : Boolean {
-        return player.hasNextMediaItem()
-    }
-    fun seekToNext(): Int {
-        return player.currentMediaItemIndex + 1
     }
 
     fun seekToPosition(position: Long) {
@@ -81,7 +69,6 @@ class SongServiceHandler @Inject constructor(
         }
     }
 
-
     @SuppressLint("SwitchIntDef")
     override fun onPlaybackStateChanged(playbackState: Int) {
         when (playbackState) {
@@ -105,5 +92,4 @@ class SongServiceHandler @Inject constructor(
             }
         }
     }
-
 }

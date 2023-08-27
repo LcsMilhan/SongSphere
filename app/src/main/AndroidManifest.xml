@@ -29,15 +29,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".service.player.SongService" android:enabled="true"/>
-        <receiver android:name=".service.notification.NotificationReceiver"
-            android:exported="true"
-            tools:ignore="ExportedReceiver">
-            <intent-filter>
-                <action android:name="actionNext" />
-                <action android:name="actionPrevious" />
-            </intent-filter>
-        </receiver>
+        <service
+            android:name=".service.player.SongService"
+            android:enabled="true"/>
     </application>
 
 </manifest>

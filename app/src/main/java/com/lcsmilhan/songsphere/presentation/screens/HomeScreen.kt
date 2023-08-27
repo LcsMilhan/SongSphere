@@ -69,8 +69,6 @@ fun SongList(
     playbackState: StateFlow<PlaybackState>,
     onBottomTabClick: () -> Unit
 ) {
-
-
     ModalBottomSheetLayout(
         sheetContent = {
             if (selectedSong != null) {

@@ -55,7 +55,6 @@ class SongViewModel @Inject constructor(
         observePlayerState()
     }
 
-
     private fun loadData() = viewModelScope.launch {
         _songs.addAll(repository.getAllSongs())
         songServiceHandler.initPlayer(
@@ -75,7 +74,6 @@ class SongViewModel @Inject constructor(
         Log.d("viewmodel", "songs size: ${_songs.indices}")
     }
 
-
     private fun onSongSelected(index: Int) {
         if (selectedSongIndex == -1) isSongPlay = true
         if (selectedSongIndex == -1 || selectedSongIndex != index) {
@@ -94,7 +92,6 @@ class SongViewModel @Inject constructor(
             isAuto = false
         }
     }
-
 
     private fun updateState(state: PlayerStates) {
         if (selectedSongIndex != -1) {
@@ -132,7 +129,6 @@ class SongViewModel @Inject constructor(
         songServiceHandler.releasePlayer()
     }
 
-
     override fun onPlayPauseClick() {
         songServiceHandler.playPause()
     }
@@ -144,9 +140,9 @@ class SongViewModel @Inject constructor(
     }
 
     override fun onNextClick() {
-        Log.d("viewmodel", "nextClick $selectedSongIndex")
         if (selectedSongIndex < songs.size - 1) {
             onSongSelected(selectedSongIndex + 1)
+
         }
     }
 

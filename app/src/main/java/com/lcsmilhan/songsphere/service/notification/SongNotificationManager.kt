@@ -68,19 +68,17 @@ class SongNotificationManager @Inject constructor(
             context,
             NOTIFICATION_ID,
             NOTIFICATION_CHANNEL_ID
-        )
-            .setMediaDescriptionAdapter(
-                SongNotificationAdapter(
-                    context = context,
-                    pendingIntent = PendingIntent.getActivity(
-                        context,
-                        0,
-                        Intent(context, MainActivity::class.java),
-                        FLAG_IMMUTABLE
-                    )
+        ).setMediaDescriptionAdapter(
+            SongNotificationAdapter(
+                context = context,
+                pendingIntent = PendingIntent.getActivity(
+                    context,
+                    0,
+                    Intent(context, MainActivity::class.java),
+                    FLAG_IMMUTABLE
                 )
             )
-            .setNotificationListener(notificationListener)
+        ).setNotificationListener(notificationListener)
             .setSmallIconResourceId(android.R.drawable.star_on)
             .build().apply {
                 setUseNextAction(true)

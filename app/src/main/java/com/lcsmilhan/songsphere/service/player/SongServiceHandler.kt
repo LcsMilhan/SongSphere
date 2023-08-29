@@ -6,7 +6,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Tracks
-import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.lcsmilhan.songsphere.service.PlayerStates
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +23,10 @@ class SongServiceHandler @Inject constructor(
 
     val currentSongDuration: Long
         get() = if (player.duration > 0) player.duration else 0L
+
+    init {
+        player.addListener(this)
+    }
 
     fun initPlayer(songList: MutableList<MediaItem>) {
         player.addListener(this)
@@ -70,19 +73,8 @@ class SongServiceHandler @Inject constructor(
         super.onTracksChanged(tracks)
     }
 
-    @UnstableApi
-    override fun onPositionDiscontinuity(
-        oldPosition: Player.PositionInfo,
-        newPosition: Player.PositionInfo,
-        reason: Int
-    ) {
-        super.onPositionDiscontinuity(oldPosition, newPosition, reason)
-    }
-
-
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-        if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO ||
-            reason == Player.MEDIA_ITEM_TRANSITION_REASON_SEEK) {
+        if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_SEEK) {
             mediaState.tryEmit(PlayerStates.STATE_CHANGE_SONG)
             mediaState.tryEmit(PlayerStates.STATE_PLAYING)
         }

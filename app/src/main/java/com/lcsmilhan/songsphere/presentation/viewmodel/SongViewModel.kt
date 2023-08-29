@@ -111,8 +111,6 @@ class SongViewModel @Inject constructor(
         }
     }
 
-
-
     private fun updatePlaybackState(state: PlayerStates) {
         playbackStateJob?.cancel()
         playbackStateJob = viewModelScope

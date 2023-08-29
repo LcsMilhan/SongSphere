@@ -8,5 +8,5 @@ enum class PlayerStates {
     STATE_END,
     STATE_PLAYING,
     STATE_PAUSE,
-    STATE_NEXT_TRACK
+    STATE_CHANGE_SONG
 }

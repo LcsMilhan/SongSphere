@@ -1,13 +1,17 @@
 package com.lcsmilhan.songsphere.service.player
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.Tracks
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import com.lcsmilhan.songsphere.service.PlayerStates
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
+
 
 class SongServiceHandler @Inject constructor(
     private val player: ExoPlayer
@@ -61,10 +65,25 @@ class SongServiceHandler @Inject constructor(
         }
     }
 
+    override fun onTracksChanged(tracks: Tracks) {
+        Log.d("service", "onTracksChanged: ${tracks.groups.size}")
+        super.onTracksChanged(tracks)
+    }
+
+    @UnstableApi
+    override fun onPositionDiscontinuity(
+        oldPosition: Player.PositionInfo,
+        newPosition: Player.PositionInfo,
+        reason: Int
+    ) {
+        super.onPositionDiscontinuity(oldPosition, newPosition, reason)
+    }
+
+
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-        super.onMediaItemTransition(mediaItem, reason)
-        if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO) {
-            mediaState.tryEmit(PlayerStates.STATE_NEXT_TRACK)
+        if (reason == Player.MEDIA_ITEM_TRANSITION_REASON_AUTO ||
+            reason == Player.MEDIA_ITEM_TRANSITION_REASON_SEEK) {
+            mediaState.tryEmit(PlayerStates.STATE_CHANGE_SONG)
             mediaState.tryEmit(PlayerStates.STATE_PLAYING)
         }
     }
@@ -78,7 +97,6 @@ class SongServiceHandler @Inject constructor(
             Player.STATE_BUFFERING -> {
                 mediaState.tryEmit(PlayerStates.STATE_BUFFERING)
             }
-
             Player.STATE_READY -> {
                 mediaState.tryEmit(PlayerStates.STATE_READY)
                 if (player.playWhenReady) {

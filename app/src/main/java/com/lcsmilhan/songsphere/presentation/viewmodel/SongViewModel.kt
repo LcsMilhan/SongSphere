@@ -71,7 +71,6 @@ class SongViewModel @Inject constructor(
                     ).build()
             }.toMutableList()
         )
-        Log.d("viewmodel", "songs size: ${_songs.indices}")
     }
 
     private fun onSongSelected(index: Int) {
@@ -79,9 +78,11 @@ class SongViewModel @Inject constructor(
         if (selectedSongIndex == -1 || selectedSongIndex != index) {
             _songs.resetSongs()
             selectedSongIndex = index
+            Log.i("viewmodel", "selectedSongIndex $selectedSongIndex = $index")
             setUpSong()
         }
     }
+
 
     private fun setUpSong() {
         if (!isAuto){
@@ -99,16 +100,18 @@ class SongViewModel @Inject constructor(
             _songs[selectedSongIndex].state = state
             _songs[selectedSongIndex].isSelected = true
             selectedSong = null
-            selectedSong = songs[selectedSongIndex]
+            selectedSong = _songs[selectedSongIndex]
 
             updatePlaybackState(state)
-            if (state == PlayerStates.STATE_NEXT_TRACK) {
+            if (state == PlayerStates.STATE_CHANGE_SONG) {
                 isAuto = true
                 onNextClick()
             }
             if (state == PlayerStates.STATE_END) onSongSelected(0)
         }
     }
+
+
 
     private fun updatePlaybackState(state: PlayerStates) {
         playbackStateJob?.cancel()
@@ -140,14 +143,13 @@ class SongViewModel @Inject constructor(
     }
 
     override fun onNextClick() {
-        if (selectedSongIndex < songs.size - 1) {
+        if (selectedSongIndex < _songs.size - 1) {
             onSongSelected(selectedSongIndex + 1)
-
         }
     }
 
     override fun onSongClick(song: Song) {
-        onSongSelected(songs.indexOf(song))
+        onSongSelected(_songs.indexOf(song))
     }
 
     override fun onSeekBarPositionChanged(position: Long) {

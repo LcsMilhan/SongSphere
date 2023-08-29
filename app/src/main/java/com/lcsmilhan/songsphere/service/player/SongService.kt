@@ -26,12 +26,11 @@ class SongService : MediaSessionService() {
 
     @UnstableApi
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        super.onStartCommand(intent, flags, startId)
         notificationManager.startNotificationService(
             this,
             mediaSession
         )
-        return START_STICKY
+        return super.onStartCommand(intent, flags, startId)
     }
 
     @UnstableApi

@@ -25,29 +25,13 @@ import javax.inject.Inject
 class SongNotificationManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val player: ExoPlayer
-){
+) {
 
     private var notificationManager: NotificationManagerCompat =
         NotificationManagerCompat.from(context)
     private lateinit var playerNotificationManager: PlayerNotificationManager
 
-    private var notificationListener: PlayerNotificationManager.NotificationListener =
-        object : PlayerNotificationManager.NotificationListener {
 
-            @UnstableApi
-            override fun onNotificationCancelled(notificationId: Int, dismissedByUser: Boolean) {
-                super.onNotificationCancelled(notificationId, dismissedByUser)
-            }
-
-            @UnstableApi
-            override fun onNotificationPosted(
-                notificationId: Int,
-                notification: Notification,
-                ongoing: Boolean
-            ) {
-                super.onNotificationPosted(notificationId, notification, ongoing)
-            }
-        }
 
     init {
         createNotificationChannel()
@@ -78,7 +62,7 @@ class SongNotificationManager @Inject constructor(
                     FLAG_IMMUTABLE
                 )
             )
-        ).setNotificationListener(notificationListener)
+        )
             .setSmallIconResourceId(android.R.drawable.star_on)
             .build().apply {
                 setUseNextAction(true)

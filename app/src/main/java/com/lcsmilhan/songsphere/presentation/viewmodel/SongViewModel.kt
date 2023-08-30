@@ -1,8 +1,10 @@
 package com.lcsmilhan.songsphere.presentation.viewmodel
 
 import android.annotation.SuppressLint
-import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,7 +23,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,7 +30,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SongViewModel @Inject constructor(
     private val songServiceHandler: SongServiceHandler,
-    private val repository: SongRepository,
+    private val repository: SongRepository
 ) : ViewModel(), PlayerEvents {
 
     private val _songs = mutableStateListOf<Song>()
@@ -37,10 +38,11 @@ class SongViewModel @Inject constructor(
 
     private var isSongPlay: Boolean = false
 
-    private val _selectSong = MutableStateFlow<Song?>(null)
-    val selectSong = _selectSong.asStateFlow()
+    var selectedSong: Song? by mutableStateOf(null)
+        private set
 
-    private var currentIndex = songServiceHandler.currentIndex
+    private var selectedSongIndex: Int by mutableStateOf(-1)
+
 
     private val _playbackState = MutableStateFlow(PlaybackState(0L, 0L))
     val playbackState: StateFlow<PlaybackState> get() = _playbackState
@@ -75,11 +77,10 @@ class SongViewModel @Inject constructor(
     }
 
     private fun onSongSelected(index: Int) {
-        if (currentIndex == -1) isSongPlay = true
-        if (currentIndex == -1 || currentIndex != index) {
+        if (selectedSongIndex == -1) isSongPlay = true
+        if (selectedSongIndex == -1 || selectedSongIndex != index) {
             _songs.resetSongs()
-            currentIndex = index
-//            Log.w("viewmodel", "onSongSelected index = $currentIndex")
+            selectedSongIndex = index
             setUpSong()
         }
     }
@@ -87,7 +88,7 @@ class SongViewModel @Inject constructor(
     private fun setUpSong() {
         if (!isAuto) {
             songServiceHandler.setUpSong(
-                currentIndex,
+                selectedSongIndex,
                 isSongPlay
             )
             isAuto = false
@@ -95,28 +96,17 @@ class SongViewModel @Inject constructor(
     }
 
     private fun updateState(state: PlayerStates) {
-        if (currentIndex != -1) {
+        if (selectedSongIndex != -1) {
             isSongPlay = state == PlayerStates.STATE_PLAYING
-            _songs[currentIndex].state = state
-            _songs[currentIndex].isSelected = true
-            _selectSong.value = null
-            _selectSong.value = _songs[currentIndex]
+            _songs[selectedSongIndex].state = state
+            _songs[selectedSongIndex].isSelected = true
+            selectedSong = null
+            selectedSong = _songs[selectedSongIndex]
 
             updatePlaybackState(state)
-            Log.e("viewmodel", "$state")
             if (state == PlayerStates.STATE_CHANGE_SONG) {
                 isAuto = true
-                songServiceHandler.setUpSongNotification(
-                    currentIndex,
-                    isSongPlay
-                )
-            }
-            if (state == PlayerStates.STATE_PREVIOUS_SONG) {
-                isAuto = false
-                songServiceHandler.setUpSongNotification(
-                    currentIndex,
-                    isSongPlay
-                )
+                onNextClick()
             }
             if (state == PlayerStates.STATE_END) {
                 onSongSelected(0)
@@ -148,18 +138,14 @@ class SongViewModel @Inject constructor(
     }
 
     override fun onPreviousClick() {
-        Log.d("viewmodel", "fun onPreviousClick() currentIndex = $currentIndex")
-        if (currentIndex > 0) {
-            onSongSelected(currentIndex - 1)
-            Log.d("viewmodel", "fun onPreviousClick() onSongSelected = $currentIndex")
+        if (selectedSongIndex > 0) {
+            onSongSelected(selectedSongIndex - 1)
         }
     }
 
     override fun onNextClick() {
-        Log.i("viewmodel", "fun onNextClick() currentIndex = $currentIndex")
-        if (currentIndex < _songs.size - 1) {
-            onSongSelected(currentIndex + 1)
-            Log.i("viewmodel", "fun onNextClick() onSongSelected = $currentIndex")
+        if (selectedSongIndex < _songs.size - 1) {
+            onSongSelected(selectedSongIndex + 1)
         }
     }
 

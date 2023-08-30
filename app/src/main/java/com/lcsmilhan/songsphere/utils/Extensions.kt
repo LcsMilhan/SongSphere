@@ -10,7 +10,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
-
 fun MutableList<Song>.resetSongs() {
     this.forEach { song ->
         song.isSelected = false

@@ -18,7 +18,6 @@ import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -42,7 +41,6 @@ fun HomeScreen(
 
     startService()
 
-
     val fullScreenState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true
@@ -50,11 +48,10 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
     val onBottomTabClick: () -> Unit = { scope.launch { fullScreenState.show() } }
 
-    val select = viewModel.selectSong.collectAsState()
 
     SongList(
         songs = viewModel.songs,
-        selectedSong = select.value,
+        selectedSong = viewModel.selectedSong,
         fullScreenState = fullScreenState,
         playerEvents = viewModel,
         playbackState = viewModel.playbackState,
@@ -72,15 +69,12 @@ fun SongList(
     playbackState: StateFlow<PlaybackState>,
     onBottomTabClick: () -> Unit
 ) {
-    val viewModel: SongViewModel = hiltViewModel()
-
-    val select = viewModel.selectSong.collectAsState()
 
     ModalBottomSheetLayout(
         sheetContent = {
             if (selectedSong != null) {
                 BottomSheetDialog(
-                    selectedSong = select.value!!,
+                    selectedSong = selectedSong,
                     playerEvents = playerEvents,
                     playbackState = playbackState
                 )

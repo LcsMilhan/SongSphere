@@ -21,8 +21,9 @@ import com.lcsmilhan.songsphere.service.PlayerEvents
 fun BottomPlayerTab(
     selectedSong: Song,
     playerEvents: PlayerEvents,
-    onBottomTabClick: () -> Unit
+    onBottomTabClick: () -> Unit,
 ) {
+
     Column(
         Modifier
             .fillMaxWidth()

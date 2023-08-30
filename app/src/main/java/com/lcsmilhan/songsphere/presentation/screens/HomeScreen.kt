@@ -1,7 +1,6 @@
 @file:OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 package com.lcsmilhan.songsphere.presentation.screens
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.Box
@@ -19,6 +18,7 @@ import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -42,6 +42,7 @@ fun HomeScreen(
 
     startService()
 
+
     val fullScreenState = rememberModalBottomSheetState(
         initialValue = ModalBottomSheetValue.Hidden,
         skipHalfExpanded = true
@@ -49,16 +50,16 @@ fun HomeScreen(
     val scope = rememberCoroutineScope()
     val onBottomTabClick: () -> Unit = { scope.launch { fullScreenState.show() } }
 
+    val select = viewModel.selectSong.collectAsState()
 
     SongList(
         songs = viewModel.songs,
-        selectedSong = viewModel.selectedSong,
+        selectedSong = select.value,
         fullScreenState = fullScreenState,
         playerEvents = viewModel,
         playbackState = viewModel.playbackState,
         onBottomTabClick = onBottomTabClick
     )
-    Log.d("screen", "${viewModel.songs} ${viewModel.selectedSong}")
 }
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
@@ -71,11 +72,15 @@ fun SongList(
     playbackState: StateFlow<PlaybackState>,
     onBottomTabClick: () -> Unit
 ) {
+    val viewModel: SongViewModel = hiltViewModel()
+
+    val select = viewModel.selectSong.collectAsState()
+
     ModalBottomSheetLayout(
         sheetContent = {
             if (selectedSong != null) {
                 BottomSheetDialog(
-                    selectedSong = selectedSong,
+                    selectedSong = select.value!!,
                     playerEvents = playerEvents,
                     playbackState = playbackState
                 )

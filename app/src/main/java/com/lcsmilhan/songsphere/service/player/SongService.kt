@@ -24,6 +24,7 @@ class SongService : MediaSessionService() {
     @Inject
     lateinit var mediaSession: MediaSession
 
+
     @UnstableApi
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         notificationManager.startNotificationService(

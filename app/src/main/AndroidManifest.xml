@@ -31,7 +31,13 @@
         </activity>
         <service
             android:name=".service.player.SongService"
-            android:enabled="true"/>
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback"
+            android:stopWithTask="true">
+            <intent-filter>
+                <action android:name="androidx.media3.session.MediaSessionService" />
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

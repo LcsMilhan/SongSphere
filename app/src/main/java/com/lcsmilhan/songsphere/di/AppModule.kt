@@ -30,9 +30,11 @@ object AppModule {
     @Singleton
     fun provideMediaSession(
         @ApplicationContext context: Context,
-        player: ExoPlayer
+        player: ExoPlayer,
     ): MediaSession =
-        MediaSession.Builder(context, player).build()
+        MediaSession.Builder(context, player)
+            .build()
+
 
     @Provides
     @Singleton
@@ -81,7 +83,7 @@ object AppModule {
     @Provides
     @Singleton
     fun provideSongServiceHandler(
-        player: ExoPlayer
+        player: ExoPlayer,
     ): SongServiceHandler = SongServiceHandler(player)
 
 }

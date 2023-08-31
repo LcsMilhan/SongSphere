@@ -1,6 +1,7 @@
 package com.lcsmilhan.songsphere.presentation.components
 
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +34,7 @@ fun BottomSheetDialog(
     selectedSong: Song,
     playerEvents: PlayerEvents,
     playbackState: StateFlow<PlaybackState>
+
 ) {
     Column(
         Modifier.fillMaxWidth()
@@ -42,6 +44,7 @@ fun BottomSheetDialog(
             songName = selectedSong.songName,
             artist = selectedSong.artist
         )
+        Log.d("bottomSheetScreen", "SongInfo(songName = ${selectedSong.songName})")
         SongProgressSlider(playbackState = playbackState) {
             playerEvents.onSeekBarPositionChanged(it)
         }
@@ -51,6 +54,7 @@ fun BottomSheetDialog(
             onPlayPauseClick = playerEvents::onPlayPauseClick,
             onNextClick = playerEvents::onNextClick
         )
+        Log.w("bottomSheetScreen", "SongControls(selectedSong = ${selectedSong.artist}")
     }
 }
 

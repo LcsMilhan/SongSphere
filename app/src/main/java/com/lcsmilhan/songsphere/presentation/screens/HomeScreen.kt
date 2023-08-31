@@ -1,6 +1,7 @@
 @file:OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 package com.lcsmilhan.songsphere.presentation.screens
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.Box
@@ -57,6 +58,7 @@ fun HomeScreen(
         playbackState = viewModel.playbackState,
         onBottomTabClick = onBottomTabClick
     )
+    Log.e("homeScreen", "${viewModel.selectedSong}")
 }
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
@@ -110,5 +112,4 @@ fun SongList(
             }
         }
     }
-
 }

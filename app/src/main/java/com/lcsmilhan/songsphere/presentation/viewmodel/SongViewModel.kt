@@ -1,6 +1,7 @@
 package com.lcsmilhan.songsphere.presentation.viewmodel
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -43,15 +44,15 @@ class SongViewModel @Inject constructor(
 
     private var selectedSongIndex: Int by mutableStateOf(-1)
 
-
     private val _playbackState = MutableStateFlow(PlaybackState(0L, 0L))
     val playbackState: StateFlow<PlaybackState> get() = _playbackState
-
 
     var isServiceRunning = false
     private var playbackStateJob: Job? = null
 
     private var isAuto: Boolean = false
+
+    private var nextSong: Boolean = false
 
     init {
         loadData()
@@ -95,6 +96,8 @@ class SongViewModel @Inject constructor(
         }
     }
 
+
+
     private fun updateState(state: PlayerStates) {
         if (selectedSongIndex != -1) {
             isSongPlay = state == PlayerStates.STATE_PLAYING
@@ -103,10 +106,23 @@ class SongViewModel @Inject constructor(
             selectedSong = null
             selectedSong = _songs[selectedSongIndex]
 
+
             updatePlaybackState(state)
-            if (state == PlayerStates.STATE_CHANGE_SONG) {
-                isAuto = true
-                onNextClick()
+            Log.d("viewmodel", "fun updateState() after fun updatePlaybackState($state)")
+            if (state == PlayerStates.STATE_NEXT_SONG) {
+                Log.w("viewmodel", "after nextSong = $nextSong, isAuto = $isAuto")
+                nextSong = true
+                if (nextSong && !isAuto) {
+                    Log.v("viewmodel", "after nextSong2 = $nextSong, isAuto2 = $isAuto")
+                    if (selectedSongIndex < _songs.size - 1) {
+                        onSongSelected(selectedSongIndex + 1)
+                        // onSongSelected (currentIndex + 1)
+                        Log.w("viewmodel", "STATE_CHANGE_SONG, onSongSelected(${selectedSongIndex + 1})")
+                    }
+                    nextSong = false
+                    isAuto = false
+                }
+
             }
             if (state == PlayerStates.STATE_END) {
                 onSongSelected(0)
@@ -140,12 +156,14 @@ class SongViewModel @Inject constructor(
     override fun onPreviousClick() {
         if (selectedSongIndex > 0) {
             onSongSelected(selectedSongIndex - 1)
+            Log.e("viewmodel", "override fun onPreviousClick(), onSongSelected(${selectedSongIndex - 1})")
         }
     }
 
     override fun onNextClick() {
         if (selectedSongIndex < _songs.size - 1) {
             onSongSelected(selectedSongIndex + 1)
+            Log.e("viewmodel", "override fun onNextClick(), onSongSelected(${selectedSongIndex + 1})")
         }
     }
 

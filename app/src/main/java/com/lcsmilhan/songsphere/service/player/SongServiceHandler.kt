@@ -1,11 +1,13 @@
 package com.lcsmilhan.songsphere.service.player
 
+import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
-import androidx.media3.common.Player.MEDIA_ITEM_TRANSITION_REASON_AUTO
+import androidx.media3.common.Player.MEDIA_ITEM_TRANSITION_REASON_SEEK
 import androidx.media3.exoplayer.ExoPlayer
 import com.lcsmilhan.songsphere.service.PlayerStates
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
@@ -22,8 +24,14 @@ class SongServiceHandler @Inject constructor(
     val currentSongDuration: Long
         get() = if (player.duration > 0) player.duration else 0L
 
-    fun initPlayer(songList: MutableList<MediaItem>) {
+    private var job: Job? = null
+
+    init {
         player.addListener(this)
+        job = Job()
+    }
+
+    fun initPlayer(songList: MutableList<MediaItem>) {
         player.setMediaItems(songList)
         player.prepare()
     }
@@ -32,6 +40,7 @@ class SongServiceHandler @Inject constructor(
         if (player.playbackState == Player.STATE_IDLE) player.prepare()
         player.seekTo(index, 0)
         if (isSongPlay) player.playWhenReady = true
+        Log.d("service", "fun setUpSong()")
     }
 
     fun playPause() {
@@ -50,6 +59,7 @@ class SongServiceHandler @Inject constructor(
     override fun onPlayerError(error: PlaybackException) {
         super.onPlayerError(error)
         mediaState.tryEmit(PlayerStates.STATE_ERROR)
+        Log.d("service", "override fun onPlayerError(error = ${mediaState.value})")
     }
 
 
@@ -63,13 +73,20 @@ class SongServiceHandler @Inject constructor(
         }
     }
 
+    var nextSong = false
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
         super.onMediaItemTransition(mediaItem, reason)
-        if (reason == MEDIA_ITEM_TRANSITION_REASON_AUTO) {
-            mediaState.tryEmit(PlayerStates.STATE_CHANGE_SONG)
+        if (reason == MEDIA_ITEM_TRANSITION_REASON_SEEK) {
+            if (!nextSong) {
+                Log.i("service", "1= $nextSong")
+                Log.i("service", "2= ${!nextSong}")
+                mediaState.tryEmit(PlayerStates.STATE_NEXT_SONG)
+                nextSong = false
+            }
             mediaState.tryEmit(PlayerStates.STATE_PLAYING)
         }
     }
+
 
     override fun onPlaybackStateChanged(playbackState: Int) {
         when (playbackState) {
@@ -93,5 +110,6 @@ class SongServiceHandler @Inject constructor(
                 mediaState.tryEmit(PlayerStates.STATE_END)
             }
         }
+        Log.d("service", "override fun onPlaybackStateChanged(playbackState = $playbackState)")
     }
 }

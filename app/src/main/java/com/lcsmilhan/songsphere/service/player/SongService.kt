@@ -1,10 +1,8 @@
 package com.lcsmilhan.songsphere.service.player
 
 import android.content.Intent
-import android.util.Log
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
-import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import com.lcsmilhan.songsphere.service.notification.SongNotificationManager
@@ -14,9 +12,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class SongService : MediaSessionService() {
-
-    @Inject
-    lateinit var player: ExoPlayer
 
     @Inject
     lateinit var notificationManager: SongNotificationManager
@@ -47,13 +42,9 @@ class SongService : MediaSessionService() {
         }
     }
 
-    @UnstableApi
-    override fun onUpdateNotification(session: MediaSession, startInForegroundRequired: Boolean) {
-        super.onUpdateNotification(session, startInForegroundRequired)
-        Log.d("service", "onUpdateNotification")
-    }
-
     override fun onGetSession(
         controllerInfo: MediaSession.ControllerInfo
     ): MediaSession = mediaSession
+
+
 }

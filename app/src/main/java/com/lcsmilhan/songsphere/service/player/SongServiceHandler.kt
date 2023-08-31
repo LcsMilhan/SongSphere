@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.Player.MEDIA_ITEM_TRANSITION_REASON_AUTO
 import androidx.media3.common.Player.MEDIA_ITEM_TRANSITION_REASON_SEEK
 import androidx.media3.exoplayer.ExoPlayer
 import com.lcsmilhan.songsphere.service.PlayerStates
@@ -73,16 +74,11 @@ class SongServiceHandler @Inject constructor(
         }
     }
 
-    var nextSong = false
+
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
         super.onMediaItemTransition(mediaItem, reason)
-        if (reason == MEDIA_ITEM_TRANSITION_REASON_SEEK) {
-            if (!nextSong) {
-                Log.i("service", "1= $nextSong")
-                Log.i("service", "2= ${!nextSong}")
-                mediaState.tryEmit(PlayerStates.STATE_NEXT_SONG)
-                nextSong = false
-            }
+        if (reason == MEDIA_ITEM_TRANSITION_REASON_AUTO) {
+            mediaState.tryEmit(PlayerStates.STATE_CHANGE_SONG)
             mediaState.tryEmit(PlayerStates.STATE_PLAYING)
         }
     }

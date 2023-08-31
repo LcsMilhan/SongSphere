@@ -24,6 +24,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -52,11 +53,11 @@ class SongViewModel @Inject constructor(
 
     private var isAuto: Boolean = false
 
-    private var nextSong: Boolean = false
-
     init {
-        loadData()
-        observePlayerState()
+        viewModelScope.launch {
+            loadData()
+            observePlayerState()
+        }
     }
 
     private fun loadData() = viewModelScope.launch {
@@ -95,9 +96,7 @@ class SongViewModel @Inject constructor(
             isAuto = false
         }
     }
-
-
-
+    
     private fun updateState(state: PlayerStates) {
         if (selectedSongIndex != -1) {
             isSongPlay = state == PlayerStates.STATE_PLAYING
@@ -109,20 +108,9 @@ class SongViewModel @Inject constructor(
 
             updatePlaybackState(state)
             Log.d("viewmodel", "fun updateState() after fun updatePlaybackState($state)")
-            if (state == PlayerStates.STATE_NEXT_SONG) {
-                Log.w("viewmodel", "after nextSong = $nextSong, isAuto = $isAuto")
-                nextSong = true
-                if (nextSong && !isAuto) {
-                    Log.v("viewmodel", "after nextSong2 = $nextSong, isAuto2 = $isAuto")
-                    if (selectedSongIndex < _songs.size - 1) {
-                        onSongSelected(selectedSongIndex + 1)
-                        // onSongSelected (currentIndex + 1)
-                        Log.w("viewmodel", "STATE_CHANGE_SONG, onSongSelected(${selectedSongIndex + 1})")
-                    }
-                    nextSong = false
-                    isAuto = false
-                }
-
+            if (state == PlayerStates.STATE_CHANGE_SONG) {
+                isAuto = true
+                onNextClick()
             }
             if (state == PlayerStates.STATE_END) {
                 onSongSelected(0)

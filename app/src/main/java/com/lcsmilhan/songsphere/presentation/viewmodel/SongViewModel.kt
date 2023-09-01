@@ -105,7 +105,6 @@ class SongViewModel @Inject constructor(
             selectedSong = null
             selectedSong = _songs[selectedSongIndex]
 
-
             updatePlaybackState(state)
             Log.d("viewmodel", "fun updateState() after fun updatePlaybackState($state)")
             if (state == PlayerStates.STATE_CHANGE_SONG) {
@@ -163,4 +162,3 @@ class SongViewModel @Inject constructor(
         viewModelScope.launch { songServiceHandler.seekToPosition(position) }
     }
 }
-

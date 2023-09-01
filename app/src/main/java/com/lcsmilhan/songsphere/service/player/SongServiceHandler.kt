@@ -63,7 +63,6 @@ class SongServiceHandler @Inject constructor(
         Log.d("service", "override fun onPlayerError(error = ${mediaState.value})")
     }
 
-
     override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
         if (player.playbackState == Player.STATE_READY) {
             if (playWhenReady) {
@@ -74,7 +73,6 @@ class SongServiceHandler @Inject constructor(
         }
     }
 
-
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
         super.onMediaItemTransition(mediaItem, reason)
         if (reason == MEDIA_ITEM_TRANSITION_REASON_AUTO) {
@@ -82,7 +80,6 @@ class SongServiceHandler @Inject constructor(
             mediaState.tryEmit(PlayerStates.STATE_PLAYING)
         }
     }
-
 
     override fun onPlaybackStateChanged(playbackState: Int) {
         when (playbackState) {

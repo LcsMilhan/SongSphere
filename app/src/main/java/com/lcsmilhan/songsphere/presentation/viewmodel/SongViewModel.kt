@@ -106,7 +106,6 @@ class SongViewModel @Inject constructor(
             selectedSong = _songs[selectedSongIndex]
 
             updatePlaybackState(state)
-            Log.d("viewmodel", "fun updateState() after fun updatePlaybackState($state)")
             if (state == PlayerStates.STATE_CHANGE_SONG) {
                 isAuto = true
                 onNextClick()
@@ -143,14 +142,12 @@ class SongViewModel @Inject constructor(
     override fun onPreviousClick() {
         if (selectedSongIndex > 0) {
             onSongSelected(selectedSongIndex - 1)
-            Log.e("viewmodel", "override fun onPreviousClick(), onSongSelected(${selectedSongIndex - 1})")
         }
     }
 
     override fun onNextClick() {
         if (selectedSongIndex < _songs.size - 1) {
             onSongSelected(selectedSongIndex + 1)
-            Log.e("viewmodel", "override fun onNextClick(), onSongSelected(${selectedSongIndex + 1})")
         }
     }
 

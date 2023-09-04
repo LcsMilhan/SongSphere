@@ -73,6 +73,7 @@ class SongServiceHandler @Inject constructor(
         }
     }
 
+
     override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
         super.onMediaItemTransition(mediaItem, reason)
         if (reason == MEDIA_ITEM_TRANSITION_REASON_AUTO) {
@@ -105,4 +106,5 @@ class SongServiceHandler @Inject constructor(
         }
         Log.d("service", "override fun onPlaybackStateChanged(playbackState = $playbackState)")
     }
+
 }

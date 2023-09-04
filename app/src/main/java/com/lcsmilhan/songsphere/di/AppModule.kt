@@ -35,7 +35,6 @@ object AppModule {
         MediaSession.Builder(context, player)
             .build()
 
-
     @Provides
     @Singleton
     fun provideFirestore(): FirebaseFirestore {

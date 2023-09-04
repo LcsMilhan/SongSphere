@@ -50,6 +50,7 @@ fun HomeScreen(
     val onBottomTabClick: () -> Unit = { scope.launch { fullScreenState.show() } }
 
 
+
     SongList(
         songs = viewModel.songs,
         selectedSong = viewModel.selectedSong,
@@ -58,7 +59,7 @@ fun HomeScreen(
         playbackState = viewModel.playbackState,
         onBottomTabClick = onBottomTabClick
     )
-    Log.e("homeScreen", "${viewModel.selectedSong}")
+    Log.e("homeScreen", "${viewModel.selectedSong?.songName}")
 }
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)

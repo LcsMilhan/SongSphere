@@ -85,6 +85,7 @@ class SongViewModel @Inject constructor(
         }
     }
 
+
     private fun setUpSong() {
         if (!isAuto) {
             songServiceHandler.setUpSong(
@@ -94,7 +95,7 @@ class SongViewModel @Inject constructor(
             isAuto = false
         }
     }
-    
+
     private fun updateState(state: PlayerStates) {
         if (selectedSongIndex != -1) {
             isSongPlay = state == PlayerStates.STATE_PLAYING

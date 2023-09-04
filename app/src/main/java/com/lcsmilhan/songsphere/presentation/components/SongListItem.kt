@@ -28,11 +28,11 @@ fun SongListItem(
     song: Song,
     onSongClick: () -> Unit
 ) {
-    val bgColor = if (song.isSelected) MaterialTheme.colorScheme.primary
-    else MaterialTheme.colorScheme.surfaceVariant
+    val bgColor = if (song.isSelected) MaterialTheme.colorScheme.tertiary
+    else MaterialTheme.colorScheme.tertiaryContainer
 
-    val textColor = if (song.isSelected) MaterialTheme.colorScheme.onPrimary
-    else MaterialTheme.colorScheme.onSurfaceVariant
+    val textColor = if (song.isSelected) MaterialTheme.colorScheme.onTertiary
+    else MaterialTheme.colorScheme.onTertiaryContainer
 
     Row(
         Modifier

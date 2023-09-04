@@ -5,7 +5,6 @@ import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Player.MEDIA_ITEM_TRANSITION_REASON_AUTO
-import androidx.media3.common.Player.MEDIA_ITEM_TRANSITION_REASON_SEEK
 import androidx.media3.exoplayer.ExoPlayer
 import com.lcsmilhan.songsphere.service.PlayerStates
 import kotlinx.coroutines.Job

@@ -1,14 +1,16 @@
 package com.lcsmilhan.songsphere.service.player
 
-import android.util.Log
 import androidx.media3.common.MediaItem
-import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
-import androidx.media3.common.Player.MEDIA_ITEM_TRANSITION_REASON_AUTO
 import androidx.media3.exoplayer.ExoPlayer
-import com.lcsmilhan.songsphere.service.PlayerStates
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -16,93 +18,114 @@ class SongServiceHandler @Inject constructor(
     private val player: ExoPlayer
 ) : Player.Listener {
 
-    val mediaState = MutableStateFlow(PlayerStates.STATE_IDLE)
-
-    val currentPlaybackPosition: Long
-        get() = if (player.currentPosition > 0) player.currentPosition else 0L
-
-    val currentSongDuration: Long
-        get() = if (player.duration > 0) player.duration else 0L
+    private val _mediaState = MutableStateFlow<MediaState>(MediaState.Initial)
+    val mediaState = _mediaState.asStateFlow()
 
     private var job: Job? = null
 
     init {
         player.addListener(this)
-        job = Job()
     }
 
-    fun initPlayer(songList: MutableList<MediaItem>) {
-        player.setMediaItems(songList)
+    fun setMediaItemList(mediaItems: List<MediaItem>) {
+        player.setMediaItems(mediaItems)
         player.prepare()
     }
 
-    fun setUpSong(index: Int, isSongPlay: Boolean) {
-        if (player.playbackState == Player.STATE_IDLE) player.prepare()
-        player.seekTo(index, 0)
-        if (isSongPlay) player.playWhenReady = true
-        Log.d("service", "fun setUpSong()")
-    }
-
-    fun playPause() {
-        if (player.playbackState == Player.STATE_IDLE) player.prepare()
-        player.playWhenReady = !player.playWhenReady
-    }
-
-    fun releasePlayer() {
-        player.release()
-    }
-
-    fun seekToPosition(position: Long) {
-        player.seekTo(position)
-    }
-
-    override fun onPlayerError(error: PlaybackException) {
-        super.onPlayerError(error)
-        mediaState.tryEmit(PlayerStates.STATE_ERROR)
-        Log.d("service", "override fun onPlayerError(error = ${mediaState.value})")
-    }
-
-    override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
-        if (player.playbackState == Player.STATE_READY) {
-            if (playWhenReady) {
-                mediaState.tryEmit(PlayerStates.STATE_PLAYING)
-            } else {
-                mediaState.tryEmit(PlayerStates.STATE_PAUSE)
+    suspend fun onMediaEvents(
+        mediaEvent: MediaEvent,
+        selectedSongIndex: Int = -1,
+        seekPosition: Long = 0
+    ) {
+        when (mediaEvent) {
+            MediaEvent.PlayPause -> playOrPause()
+            MediaEvent.SeekTo -> player.seekTo(seekPosition)
+            MediaEvent.SeekToNext -> player.seekToNext()
+            MediaEvent.SeekToPrevious -> player.seekToPrevious()
+            MediaEvent.SelectedSongChange -> {
+                when (selectedSongIndex) {
+                    player.currentMediaItemIndex -> playOrPause()
+                    else -> {
+                        player.seekToDefaultPosition(selectedSongIndex)
+                        _mediaState.value = MediaState.Playing(true)
+                        player.playWhenReady = true
+                        startProgressUpdate()
+                    }
+                }
+            }
+            MediaEvent.Stop -> stopProgressUpdate()
+            is MediaEvent.UpdateProgress -> {
+                player.seekTo(
+                    (player.duration * mediaEvent.newProgress).toLong()
+                )
             }
         }
     }
 
-    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-        super.onMediaItemTransition(mediaItem, reason)
-        if (reason == MEDIA_ITEM_TRANSITION_REASON_AUTO) {
-            mediaState.tryEmit(PlayerStates.STATE_CHANGE_SONG)
-            mediaState.tryEmit(PlayerStates.STATE_PLAYING)
+    private suspend fun playOrPause() {
+        if (player.isPlaying) {
+            player.pause()
+            stopProgressUpdate()
         }
+        else {
+            player.play()
+            _mediaState.value = MediaState.Playing(true)
+            startProgressUpdate()
+        }
+    }
+
+    private suspend fun startProgressUpdate() = job.run {
+        while (true) {
+            delay(500)
+            _mediaState.value = MediaState.Progress(player.currentPosition)
+        }
+    }
+
+    private fun stopProgressUpdate() {
+        job?.cancel()
+        _mediaState.value = MediaState.Playing(false)
     }
 
     override fun onPlaybackStateChanged(playbackState: Int) {
         when (playbackState) {
-            Player.STATE_IDLE -> {
-                mediaState.tryEmit(PlayerStates.STATE_IDLE)
+            ExoPlayer.STATE_BUFFERING -> {
+                _mediaState.value = MediaState.Buffering(player.currentPosition)
             }
-
-            Player.STATE_BUFFERING -> {
-                mediaState.tryEmit(PlayerStates.STATE_BUFFERING)
-            }
-
-            Player.STATE_READY -> {
-                mediaState.tryEmit(PlayerStates.STATE_READY)
-                if (player.playWhenReady) {
-                    mediaState.tryEmit(PlayerStates.STATE_PLAYING)
-                } else {
-                    mediaState.tryEmit(PlayerStates.STATE_PAUSE)
-                }
-            }
-            Player.STATE_ENDED -> {
-                mediaState.tryEmit(PlayerStates.STATE_END)
+            ExoPlayer.STATE_READY -> {
+                _mediaState.value = MediaState.Ready(player.duration)
             }
         }
-        Log.d("service", "override fun onPlaybackStateChanged(playbackState = $playbackState)")
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+        _mediaState.value = MediaState.Playing(isPlaying)
+        _mediaState.value = MediaState.CurrentPlaying(player.currentMediaItemIndex)
+        if (isPlaying) {
+            GlobalScope.launch(Dispatchers.Main) {
+                startProgressUpdate()
+            }
+        }
+        else { stopProgressUpdate() }
+    }
+
+}
+
+sealed class MediaEvent {
+    object PlayPause : MediaEvent()
+    object SelectedSongChange : MediaEvent()
+    object SeekToNext : MediaEvent()
+    object SeekToPrevious : MediaEvent()
+    object SeekTo : MediaEvent()
+    object Stop : MediaEvent()
+    data class UpdateProgress(val newProgress: Float) : MediaEvent()
+}
+
+sealed class MediaState {
+    object Initial : MediaState()
+    data class Ready(val duration: Long) : MediaState()
+    data class Progress(val progress: Long) : MediaState()
+    data class Buffering(val progress: Long) : MediaState()
+    data class Playing(val isPlaying: Boolean) : MediaState()
+    data class CurrentPlaying(val mediaItemIndex: Int) : MediaState()
 }

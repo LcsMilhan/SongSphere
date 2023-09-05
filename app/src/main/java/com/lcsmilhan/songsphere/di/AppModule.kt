@@ -28,15 +28,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMediaSession(
-        @ApplicationContext context: Context,
-        player: ExoPlayer,
-    ): MediaSession =
-        MediaSession.Builder(context, player)
-            .build()
-
-    @Provides
-    @Singleton
     fun provideFirestore(): FirebaseFirestore {
         return FirebaseFirestore.getInstance()
     }
@@ -53,22 +44,26 @@ object AppModule {
         songCollection: CollectionReference
     ): SongRepository = SongRepositoryImpl(songCollection)
 
+
+
+    @Provides
+    @Singleton
+    fun provideAudioAttributes(): AudioAttributes = AudioAttributes.Builder()
+        .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+        .setUsage(C.USAGE_MEDIA)
+        .build()
+
     @Provides
     @Singleton
     @UnstableApi
     fun providePlayer(
         @ApplicationContext context: Context,
-    ): ExoPlayer {
-        val audioAttributes = AudioAttributes.Builder()
-            .setContentType(C.AUDIO_CONTENT_TYPE_SPEECH)
-            .setUsage(C.USAGE_MEDIA)
-            .build()
-        return ExoPlayer.Builder(context)
-            .setAudioAttributes(audioAttributes, true)
-            .setHandleAudioBecomingNoisy(true)
-            .setTrackSelector(DefaultTrackSelector(context))
-            .build()
-    }
+        audioAttributes: AudioAttributes,
+    ): ExoPlayer = ExoPlayer.Builder(context)
+        .setAudioAttributes(audioAttributes, true)
+        .setHandleAudioBecomingNoisy(true)
+        .setTrackSelector(DefaultTrackSelector(context))
+        .build()
 
     @Provides
     @Singleton
@@ -78,6 +73,14 @@ object AppModule {
     ): SongNotificationManager =
         SongNotificationManager(context, player)
 
+    @Provides
+    @Singleton
+    fun provideMediaSession(
+        @ApplicationContext context: Context,
+        player: ExoPlayer,
+    ): MediaSession =
+        MediaSession.Builder(context, player)
+            .build()
 
     @Provides
     @Singleton

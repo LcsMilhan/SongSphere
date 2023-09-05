@@ -6,19 +6,24 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.media3.common.util.UnstableApi
 import com.lcsmilhan.songsphere.presentation.screens.HomeScreen
 import com.lcsmilhan.songsphere.presentation.viewmodel.SongViewModel
+import com.lcsmilhan.songsphere.presentation.viewmodel.UIEvents
 import com.lcsmilhan.songsphere.service.player.SongService
 import com.lcsmilhan.songsphere.ui.theme.SongSphereTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 
+@UnstableApi
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val viewModel: SongViewModel by viewModels()
+    private var isServiceRunning = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,27 +31,32 @@ class MainActivity : ComponentActivity() {
         setContent {
             SongSphereTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
                 ) {
                     HomeScreen(
-                        viewModel,
-                        ::startService
+                        progress = viewModel.progress,
+                        onProgress = { viewModel.onUiEvents(UIEvents.SeekTo(it)) },
+                        isSongPlaying = viewModel.isPlaying,
+                        currentPlayingSong = viewModel.currentSelectedSong,
+                        songList = viewModel.songList,
+                        onStart = { viewModel.onUiEvents(UIEvents.PlayPause) },
+                        onItemClick = {
+                            viewModel.onUiEvents(UIEvents.SelectedSongChange(it))
+                            startService()
+                        },
+                        onNext = { viewModel.onUiEvents(UIEvents.SeekToNext) },
+                        onPrevious = { viewModel.onUiEvents(UIEvents.SeekToPrevious) }
                     )
                 }
             }
         }
     }
-    override fun onDestroy() {
-        super.onDestroy()
-        stopService(Intent(this, SongService::class.java))
-        viewModel.isServiceRunning = false
-    }
-
     private fun startService() {
-        if (!viewModel.isServiceRunning) {
+        if (!isServiceRunning) {
             val intent = Intent(this, SongService::class.java)
             startForegroundService(intent)
-            viewModel.isServiceRunning = true
+            isServiceRunning = true
         }
     }
 }

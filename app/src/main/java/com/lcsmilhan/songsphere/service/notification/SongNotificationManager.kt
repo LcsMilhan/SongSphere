@@ -27,11 +27,8 @@ class SongNotificationManager @Inject constructor(
     private val player: ExoPlayer
 ) {
 
-    private var notificationManager: NotificationManagerCompat =
+    private val notificationManager: NotificationManagerCompat =
         NotificationManagerCompat.from(context)
-    private lateinit var playerNotificationManager: PlayerNotificationManager
-
-
 
     init {
         createNotificationChannel()
@@ -48,7 +45,7 @@ class SongNotificationManager @Inject constructor(
 
     @UnstableApi
     private fun buildNotification(mediaSession: MediaSession) {
-        playerNotificationManager = PlayerNotificationManager.Builder(
+        PlayerNotificationManager.Builder(
             context,
             NOTIFICATION_ID,
             NOTIFICATION_CHANNEL_ID

@@ -31,10 +31,15 @@ val Typography = Typography(
         fontWeight = FontWeight.SemiBold,
         fontSize = 20.sp
     ),
+    titleSmall = TextStyle(
+        fontFamily = QuickSand,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 17.sp
+    ),
     bodyLarge = TextStyle(
         fontFamily = QuickSand,
         fontWeight = FontWeight.Normal,
-        fontSize = 18.sp
+        fontSize = 13.sp
     ),
     labelLarge = TextStyle(
         fontFamily = QuickSand,
@@ -45,5 +50,11 @@ val Typography = Typography(
         fontFamily = QuickSand,
         fontWeight = FontWeight.Normal,
         fontSize = 12.sp
+    ),
+    labelSmall = TextStyle(
+        fontFamily = QuickSand,
+        fontWeight = FontWeight.Normal,
+        fontSize = 10.sp
     )
+
 )

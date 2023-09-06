@@ -108,7 +108,6 @@ class SongServiceHandler @Inject constructor(
         }
         else { stopProgressUpdate() }
     }
-
 }
 
 sealed class MediaEvent {

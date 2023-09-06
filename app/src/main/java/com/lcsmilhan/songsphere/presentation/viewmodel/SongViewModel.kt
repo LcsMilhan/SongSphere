@@ -20,7 +20,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @SuppressLint("AutoboxingStateCreation")
@@ -122,9 +121,7 @@ class SongViewModel @Inject constructor(
                         .setArtworkUri(song.imageUrl.toUri())
                         .build()
                 ).build()
-        }.also {
-            songServiceHandler.setMediaItemList(it)
-        }
+        }.also { songServiceHandler.setMediaItemList(it) }
     }
 
     private fun calculateProgressValue(currentProgress: Long) {
@@ -135,9 +132,10 @@ class SongViewModel @Inject constructor(
     }
 
     private fun formatDuration(duration: Long): String {
-        val minute = TimeUnit.MINUTES.convert(duration, TimeUnit.MILLISECONDS)
-        val seconds = (minute) - minute * TimeUnit.SECONDS.convert(1, TimeUnit.MINUTES)
-        return String.format("%02d:%02d", minute, seconds)
+        val totalSeconds = duration / 1000
+        val minutes = totalSeconds / 60
+        val remainingSeconds = totalSeconds % 60
+        return String.format("%02d:%02d", minutes, remainingSeconds)
     }
 
     override fun onCleared() {

@@ -8,7 +8,4 @@ object Constants {
     const val NOTIFICATION_CHANNEL_NAME = "SongSphere Playback Notification"
     const val NOTIFICATION_CHANNEL_ID = "SongSphere Playback Notification ID"
 
-    const val ACTION_NEXT = "next"
-    const val ACTION_PREVIOUS = "previous"
-
 }

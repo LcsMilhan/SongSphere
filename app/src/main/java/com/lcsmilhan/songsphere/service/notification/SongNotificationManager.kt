@@ -26,7 +26,6 @@ class SongNotificationManager @Inject constructor(
     @ApplicationContext private val context: Context,
     private val player: ExoPlayer
 ) {
-
     private val notificationManager: NotificationManagerCompat =
         NotificationManagerCompat.from(context)
 

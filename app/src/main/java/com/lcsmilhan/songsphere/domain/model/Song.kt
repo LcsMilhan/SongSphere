@@ -11,11 +11,13 @@ data class Song(
     val songName: String = "",
     val songUrl: String = "",
     val imageUrl: String = "",
+    val duration: String = "",
     var isSelected: Boolean = false
 ) : Parcelable {
 
     @RequiresApi(Build.VERSION_CODES.Q)
     constructor(parcel: Parcel) : this(
+        parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readString() ?: "",
@@ -35,6 +37,7 @@ data class Song(
         parcel.writeString(songName)
         parcel.writeString(songUrl)
         parcel.writeString(imageUrl)
+        parcel.writeString(duration)
         parcel.writeBoolean(isSelected)
     }
 

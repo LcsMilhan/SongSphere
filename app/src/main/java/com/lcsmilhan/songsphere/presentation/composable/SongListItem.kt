@@ -43,10 +43,10 @@ fun SongListItem(
             .clickable(onClick = onSongClick),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        SongImage(songImage = song.imageUrl, modifier = Modifier.size(80.dp))
+        SongImage(songImage = song.imageUrl, modifier = Modifier.size(75.dp))
         Column(
             Modifier
-                .padding(start = 10.dp, end = 10.dp)
+                .padding(start = 10.dp, end = 5.dp)
                 .weight(1f),
         ) {
             Text(
@@ -63,7 +63,7 @@ fun SongListItem(
                 text = song.duration,
                 style = MaterialTheme.typography.labelSmall,
                 color = textColor,
-                modifier = Modifier.padding(vertical = 10.dp)
+                modifier = Modifier.padding(vertical = 5.dp)
             )
         }
         if (viewModel.isPlaying && song.isSelected) LottieAudioWave()

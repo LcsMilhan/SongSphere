@@ -102,7 +102,7 @@ fun SongProgressSlider(
         valueRange = 0f..100f,
         colors = SliderDefaults.colors(
             thumbColor = MaterialTheme.colorScheme.primary,
-            activeTrackColor = MaterialTheme.colorScheme.onPrimary.copy(0.5f)
+            activeTrackColor = MaterialTheme.colorScheme.primary.copy(0.7f)
         ),
         modifier = Modifier.padding(horizontal = 8.dp)
     )

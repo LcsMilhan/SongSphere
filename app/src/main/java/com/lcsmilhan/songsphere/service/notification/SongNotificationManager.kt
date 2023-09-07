@@ -14,6 +14,7 @@ import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
 import androidx.media3.session.MediaSessionService
 import androidx.media3.ui.PlayerNotificationManager
+import com.lcsmilhan.songsphere.R
 import com.lcsmilhan.songsphere.common.Constants.NOTIFICATION_CHANNEL_ID
 import com.lcsmilhan.songsphere.common.Constants.NOTIFICATION_CHANNEL_NAME
 import com.lcsmilhan.songsphere.common.Constants.NOTIFICATION_ID
@@ -58,17 +59,15 @@ class SongNotificationManager @Inject constructor(
                     FLAG_IMMUTABLE
                 )
             )
-        )
-            .setSmallIconResourceId(android.R.drawable.star_on)
-            .build().apply {
-                setUseNextAction(true)
-                setUsePreviousAction(true)
-                setUseRewindActionInCompactView(false)
-                setUseFastForwardActionInCompactView(false)
-                setPriority(NotificationCompat.PRIORITY_LOW)
-                setMediaSessionToken(mediaSession.sessionCompatToken)
-                setPlayer(player)
-            }
+        ).setSmallIconResourceId(R.drawable.wavesound).build().apply {
+            setUseNextAction(true)
+            setUsePreviousAction(true)
+            setUseRewindActionInCompactView(false)
+            setUseFastForwardActionInCompactView(false)
+            setPriority(NotificationCompat.PRIORITY_LOW)
+            setMediaSessionToken(mediaSession.sessionCompatToken)
+            setPlayer(player)
+        }
     }
 
     private fun startForegroundNotification(mediaSessionService: MediaSessionService) {

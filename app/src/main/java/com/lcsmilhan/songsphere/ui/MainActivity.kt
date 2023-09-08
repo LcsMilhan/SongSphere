@@ -48,7 +48,6 @@ class MainActivity : ComponentActivity() {
             viewModel.isServiceRunning.value = true
         }
     }
-
     private fun stopService() {
         if (viewModel.isServiceRunning.value) {
             val intent = Intent(this, SongService::class.java)

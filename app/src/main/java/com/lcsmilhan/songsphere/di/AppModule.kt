@@ -49,7 +49,7 @@ object AppModule {
     @Provides
     @Singleton
     fun provideAudioAttributes(): AudioAttributes = AudioAttributes.Builder()
-        .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+        .setContentType(C.AUDIO_CONTENT_TYPE_MOVIE)
         .setUsage(C.USAGE_MEDIA)
         .build()
 

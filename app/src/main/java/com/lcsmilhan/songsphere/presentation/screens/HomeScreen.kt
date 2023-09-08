@@ -56,6 +56,7 @@ fun HomeScreen(
         onUIEvents = viewModel::onUiEvents,
         onBottomTabClick = onBottomTabClick
     )
+
 }
 
 @OptIn(ExperimentalMaterialApi::class)

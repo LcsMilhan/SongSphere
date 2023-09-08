@@ -43,6 +43,8 @@ class SongViewModel @Inject constructor(
     private val _currentSelectedSong = MutableStateFlow<Song?>(null)
     val currentSelectedSong = _currentSelectedSong.asStateFlow()
 
+    val isServiceRunning = MutableStateFlow(false)
+
     init {
         viewModelScope.launch {
             val job1 = launch {

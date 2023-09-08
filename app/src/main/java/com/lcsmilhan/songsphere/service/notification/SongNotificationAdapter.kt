@@ -20,15 +20,18 @@ class SongNotificationAdapter(
 ) : PlayerNotificationManager.MediaDescriptionAdapter {
 
     override fun getCurrentContentTitle(player: Player): CharSequence {
-        return player.mediaMetadata.albumTitle ?: ""
+//        return player.mediaMetadata.albumTitle ?: ""
+        return player.currentMediaItem?.mediaMetadata?.title ?: ""
     }
+
 
     override fun createCurrentContentIntent(player: Player): PendingIntent? {
         return pendingIntent
     }
 
     override fun getCurrentContentText(player: Player): CharSequence {
-        return player.mediaMetadata.displayTitle ?: ""
+//        return player.mediaMetadata.displayTitle ?: "
+        return player.currentMediaItem?.mediaMetadata?.artist ?: ""
     }
 
     override fun getCurrentLargeIcon(
@@ -37,7 +40,7 @@ class SongNotificationAdapter(
     ): Bitmap? {
         Glide.with(context)
             .asBitmap()
-            .load(player.currentMediaItem?.mediaMetadata?.artworkUri)
+            .load(player.mediaMetadata.artworkUri)
             .diskCacheStrategy(DiskCacheStrategy.ALL)
             .into(object : CustomTarget<Bitmap>() {
                 override fun onLoadCleared(placeholder: Drawable?) = Unit

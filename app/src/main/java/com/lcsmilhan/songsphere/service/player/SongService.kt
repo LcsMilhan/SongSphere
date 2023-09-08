@@ -21,11 +21,12 @@ class SongService : MediaSessionService() {
     lateinit var mediaSession: MediaSession
     @UnstableApi
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
         notificationManager.startNotificationService(
-            this,
-            mediaSession
+            mediaSessionService = this,
+            mediaSession = mediaSession
         )
-        return super.onStartCommand(intent, flags, startId)
+        return START_STICKY
     }
 
     @UnstableApi
@@ -44,4 +45,9 @@ class SongService : MediaSessionService() {
     override fun onGetSession(
         controllerInfo: MediaSession.ControllerInfo
     ): MediaSession = mediaSession
+
+    @UnstableApi
+    override fun onUpdateNotification(session: MediaSession, startInForegroundRequired: Boolean) {
+        super.onUpdateNotification(session, startInForegroundRequired)
+    }
 }

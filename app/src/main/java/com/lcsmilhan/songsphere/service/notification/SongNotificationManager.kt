@@ -29,6 +29,23 @@ class SongNotificationManager @Inject constructor(
 ) {
     private val notificationManager: NotificationManagerCompat =
         NotificationManagerCompat.from(context)
+    private lateinit var playerNotificationManager: PlayerNotificationManager
+
+    @UnstableApi
+    private var notificationListener: PlayerNotificationManager.NotificationListener =
+        object : PlayerNotificationManager.NotificationListener {
+            override fun onNotificationCancelled(notificationId: Int, dismissedByUser: Boolean) {
+                super.onNotificationCancelled(notificationId, dismissedByUser)
+            }
+
+            override fun onNotificationPosted(
+                notificationId: Int,
+                notification: Notification,
+                ongoing: Boolean
+            ) {
+                super.onNotificationPosted(notificationId, notification, ongoing)
+            }
+        }
 
     init {
         createNotificationChannel()
@@ -45,7 +62,7 @@ class SongNotificationManager @Inject constructor(
 
     @UnstableApi
     private fun buildNotification(mediaSession: MediaSession) {
-        PlayerNotificationManager.Builder(
+        playerNotificationManager = PlayerNotificationManager.Builder(
             context,
             NOTIFICATION_ID,
             NOTIFICATION_CHANNEL_ID
@@ -59,14 +76,14 @@ class SongNotificationManager @Inject constructor(
                     FLAG_IMMUTABLE
                 )
             )
-        ).setSmallIconResourceId(R.drawable.wavesound).build().apply {
-            setUseNextAction(true)
-            setUsePreviousAction(true)
-            setUseRewindActionInCompactView(false)
-            setUseFastForwardActionInCompactView(false)
-            setPriority(NotificationCompat.PRIORITY_LOW)
-            setMediaSessionToken(mediaSession.sessionCompatToken)
-            setPlayer(player)
+        ).setSmallIconResourceId(R.drawable.wavesound).build().also {
+            it.setUseNextAction(true)
+            it.setUsePreviousAction(true)
+            it.setUseRewindActionInCompactView(false)
+            it.setUseFastForwardActionInCompactView(false)
+            it.setPriority(NotificationCompat.PRIORITY_LOW)
+            it.setMediaSessionToken(mediaSession.sessionCompatToken)
+            it.setPlayer(player)
         }
     }
 

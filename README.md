@@ -36,4 +36,4 @@ If you're an enthusiastic Android developer and want to contribute to SongSphere
 
 App Running
 -
-https://github.com/LcsMilhan/SongSphere/assets/128747056/85c61893-48d9-47f9-b7cd-3374c3cf722d
+https://github.com/LcsMilhan/YumYumApp/assets/128747056/7b08d93c-f878-41c8-a28a-db1ee839299f

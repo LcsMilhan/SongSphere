@@ -33,3 +33,7 @@ How to Run the Project
 How to Contribute
 -
 If you're an enthusiastic Android developer and want to contribute to SongSphere, feel free to explore the source code, open issues, or submit pull requests. 
+
+App Running
+-
+https://github.com/LcsMilhan/SongSphere/assets/128747056/85c61893-48d9-47f9-b7cd-3374c3cf722d
